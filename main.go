@@ -206,7 +206,7 @@ func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(string(datap))
 
 	/////////////////////////////////////////////////////
-	//Transacciones
+	//Transacciones remote
 
 	var t, st, cad, idt, idbt, ipt, dt, idpt, st2, cad2 string
 	transacc := getTransactions()
@@ -343,11 +343,10 @@ func GetListarEndPoint(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
 	}
-
 	request.Header.Add("content-type", "application/json")
 	request.Header.Add("Access-Control-Allow-Origin", "*")
 	request.Header.Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS")
-	request.Header.Add("Access-Control-Allow-Headers", "Content-Type")
+	request.Header.Add("Access-Control-Allow-Headers", "content-type")
 	request.Header.Add("cache-control", "no-cache")
 	client := &http.Client{}
 	response, err := client.Do(request)
@@ -364,10 +363,11 @@ func GetListarEndPoint(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error en el body")
 		panic(err)
 	}
-
-	// fmt.Println(data)
-	fmt.Println(string(data))
+	// r.Header.Set("Access-Control-Allow-Origin", "*")
 	w.Write(data)
+	// fmt.Println(data)
+	//fmt.Println(string(data))
+
 }
 
 func PostListarUnoEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -381,13 +381,35 @@ func PostListarUnoEndPoint(w http.ResponseWriter, r *http.Request) {
 	// }
 	// json.NewEncoder(w).Encode(&Buyers{})
 }
+func enableCORS(router *mux.Router) {
+	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost")
+	}).Methods(http.MethodOptions)
+	router.Use(middlewareCors)
+}
+
+func middlewareCors(next http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, req *http.Request) {
+			// Just put some headers to allow CORS...
+			w.Header().Set("Access-Control-Allow-Origin", "http://localhost")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+			// and call next handler!
+			next.ServeHTTP(w, req)
+		})
+}
 
 func main() {
 
 	r := mux.NewRouter()
-	r.HandleFunc("/cargar", PostCargarEndPoint).Methods("POST")
+	enableCORS(r)
+	// r.HandleFunc("/cargar", PostCargarEndPoint).Methods("POST")
+	// r.HandleFunc("/comprador/{id}", PostListarUnoEndPoint).Methods("GET")
+
 	r.HandleFunc("/listar", GetListarEndPoint).Methods("GET", "OPTIONS")
-	r.HandleFunc("/comprador/{id}", PostListarUnoEndPoint).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":9000", r))
 
 }
