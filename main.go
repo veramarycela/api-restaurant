@@ -84,13 +84,16 @@ func (ti Buyer) String() string {
 	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", age:", ti.Age, "}")
 }
 func (ti Products) String() string {
-	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", price:", ti.Price, "}")
+
+	aux := fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", price:", ti.Price, "}")
+
+	return aux
 }
 func (ti Transactions) String() string {
 	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", buyeid: {id:", "\"", ti.Buyeid, "\"}", ", ip:", "\"", ti.Ip, "\"", ", device:", "\"", ti.Device, "\"", ", productsids:[", ti.Productsids, "]}")
 }
 
-func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
+func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 	/////////////////////////////////////////////////////////////////////
 	////buyers
 	var c string
@@ -112,8 +115,8 @@ func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	c = strings.TrimRight(c, ",")
 
-	// fmt.Println(c)
-	c = "mutation MyMutation { addBuyers(input: [ " + c + "]) {buyers{id name age}}}"
+	fmt.Println(c)
+	c = "mutation MyMutation { addBuyers(input: [ " + c + "]) { numUids }}"
 
 	jsonData := map[string]string{"query": c}
 
@@ -147,9 +150,12 @@ func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	fmt.Println(data)
-	fmt.Println(string(data))
+	// fmt.Println(data)
+	// fmt.Println(string(data))
+	w.Write(data)
+}
 
+func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 	//////////////////////////////////////////////////////////////////////
 	////productos
 	var p string
@@ -169,7 +175,7 @@ func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
 	p = strings.TrimRight(p, ",")
 
 	// 	fmt.Println(p)
-	p = "mutation MyMutation { addProducts(input: [ " + p + "]) {products{id name price}}}"
+	p = "mutation MyMutation { addProducts(input: [ " + p + "]) {numUids}}"
 
 	jsonDatap := map[string]string{"query": p}
 
@@ -204,7 +210,9 @@ func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(datap)
 	fmt.Println(string(datap))
-
+	w.Write(datap)
+}
+func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 	/////////////////////////////////////////////////////
 	//Transacciones remote
 
@@ -288,7 +296,7 @@ func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(t)
 
-	t = "mutation MyMutation { addTransactions(input: [ " + t + "]) {transactions{id buyeid{id} device ip productsids{id}}}}"
+	t = "mutation MyMutation { addTransactions(input: [ " + t + "]) {numUids}}"
 
 	jsonDatat := map[string]string{"query": t}
 
@@ -321,11 +329,12 @@ func PostCargarEndPoint(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error en el body")
 		panic(err)
 	}
-	fmt.Println(datat)
-	fmt.Println(string(datat))
+	// fmt.Println(datat)
+	// fmt.Println(string(datat))
+	w.Write(datat)
 }
 
-func GetListarEndPoint(w http.ResponseWriter, r *http.Request) {
+func GetListarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 	c := "query MyQuery { queryBuyers {id name age}}"
 
 	jsonData := map[string]string{"query": c}
@@ -369,17 +378,98 @@ func GetListarEndPoint(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println(string(data))
 
 }
+func GetListarProductosEndPoint(w http.ResponseWriter, r *http.Request) {
+	c := "query MyQuery { queryProducts {id name price}}"
 
-func PostListarUnoEndPoint(w http.ResponseWriter, r *http.Request) {
-	// params := mux.Vars(r)
+	jsonData := map[string]string{"query": c}
 
-	// for _, item := range buyer {
-	// 	if item.ID == params["id"] {
-	// 		json.NewEncoder(w).Encode(item)
-	// 		return
-	// 	}
-	// }
-	// json.NewEncoder(w).Encode(&Buyers{})
+	// fmt.Println(jsonData)
+
+	jsonValue, err := json.Marshal(jsonData)
+	if err != nil {
+		fmt.Println("hay un error en el json")
+		panic(err)
+	}
+	// fmt.Println(jsonValue)
+	request, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		fmt.Println("error al adicionar en el post")
+		panic(err)
+	}
+	request.Header.Add("content-type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		fmt.Println("error al adicionar la query")
+		panic(err)
+	}
+	fmt.Println(request)
+	fmt.Println(response)
+	defer response.Body.Close()
+
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("error en el body")
+		panic(err)
+	}
+	// r.Header.Set("Access-Control-Allow-Origin", "*")
+	w.Write(data)
+	// fmt.Println(data)
+	//fmt.Println(string(data))
+
+}
+func GetListarTrasnsactionsEndPoint(w http.ResponseWriter, r *http.Request) {
+	c := "query MyQuery { queryTransactions {id device ip productsids{id}}}"
+
+	jsonData := map[string]string{"query": c}
+
+	// fmt.Println(jsonData)
+
+	jsonValue, err := json.Marshal(jsonData)
+	if err != nil {
+		fmt.Println("hay un error en el json")
+		panic(err)
+	}
+	// fmt.Println(jsonValue)
+	request, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		fmt.Println("error al adicionar en el post")
+		panic(err)
+	}
+	request.Header.Add("content-type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		fmt.Println("error al adicionar la query")
+		panic(err)
+	}
+	fmt.Println(request)
+	fmt.Println(response)
+	defer response.Body.Close()
+
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("error en el body")
+		panic(err)
+	}
+	// r.Header.Set("Access-Control-Allow-Origin", "*")
+	w.Write(data)
+	// fmt.Println(data)
+	//fmt.Println(string(data))
+
+}
+func GetListarUnoEndPoint(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	buyers := getBuyers()
+	for _, item := range buyers {
+		if item.ID == params["id"] {
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
+	json.NewEncoder(w).Encode(&Buyer{})
 }
 func enableCORS(router *mux.Router) {
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -392,8 +482,8 @@ func middlewareCors(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, req *http.Request) {
 			// Just put some headers to allow CORS...
-			w.Header().Set("Access-Control-Allow-Origin", "http://localhost")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			// w.Header().Set("Access-Control-Allow-Credentials", "true")
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 			// and call next handler!
@@ -405,11 +495,14 @@ func main() {
 
 	r := mux.NewRouter()
 	enableCORS(r)
-	// r.HandleFunc("/cargar", PostCargarEndPoint).Methods("POST")
-	// r.HandleFunc("/comprador/{id}", PostListarUnoEndPoint).Methods("GET")
 
-	r.HandleFunc("/listar", GetListarEndPoint).Methods("GET", "OPTIONS")
-
+	r.HandleFunc("/cargarc", GetCargarCompradorEndPoint).Methods("GET")
+	r.HandleFunc("/cargarp", GetCargarProductoEndPoint).Methods("GET")
+	r.HandleFunc("/cargart", GetCargarTransactionsEndPoint).Methods("GET")
+	r.HandleFunc("/listarc", GetListarCompradorEndPoint).Methods("GET")
+	r.HandleFunc("/listarp", GetListarProductosEndPoint).Methods("GET")
+	r.HandleFunc("/listart", GetListarTrasnsactionsEndPoint).Methods("GET")
+	r.HandleFunc("/buyer/{id}", GetListarUnoEndPoint).Methods("GET")
 	log.Fatal(http.ListenAndServe(":9000", r))
 
 }
