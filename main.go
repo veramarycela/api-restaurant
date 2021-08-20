@@ -128,7 +128,7 @@ func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://purple-wood.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -187,7 +187,7 @@ func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// 	// fmt.Println(jsonValuep)
-	requestp, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuep))
+	requestp, err := http.NewRequest("POST", "https://purple-wood.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuep))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -308,7 +308,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValuep)
-	requestt, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuet))
+	requestt, err := http.NewRequest("POST", "https://purple-wood.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuet))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -347,7 +347,7 @@ func GetListarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://purple-wood.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -391,7 +391,7 @@ func GetListarProductosEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://purple-wood.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -420,7 +420,7 @@ func GetListarProductosEndPoint(w http.ResponseWriter, r *http.Request) {
 
 }
 func GetListarTrasnsactionsEndPoint(w http.ResponseWriter, r *http.Request) {
-	c := "query MyQuery { queryTransactions {id device ip productsids{id}}}"
+	c := "query MyQuery { queryTransactions {id device ip productsids{id} buyeid{id}}}"
 
 	jsonData := map[string]string{"query": c}
 
@@ -432,7 +432,7 @@ func GetListarTrasnsactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://purple-wood.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
