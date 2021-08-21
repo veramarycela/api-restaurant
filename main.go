@@ -10,20 +10,25 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 )
 
 type Buyer struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Age         int    `json:"age"`
+	Datec       string `json:"datec "`
+	Transaction string `json:"transaction "`
 }
 
 type Products struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Price string `json:"price"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Price       string `json:"price"`
+	Datec       string `json:"datec "`
+	Transaction string `json:"transaction "`
 }
 
 type Transactions struct {
@@ -32,6 +37,7 @@ type Transactions struct {
 	Ip          string `json:"ip"`
 	Device      string `json:"device"`
 	Productsids string `json:"productsids"`
+	Datec       string `json:"datec "`
 }
 
 type Stringer interface {
@@ -39,7 +45,7 @@ type Stringer interface {
 }
 
 func getBuyers() []Buyer {
-	buyers := make([]Buyer, 3)
+	buyers := make([]Buyer, 4)
 	raw, err := ioutil.ReadFile("filebuyers.json")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -81,16 +87,20 @@ func getTransactions() [][]string {
 }
 
 func (ti Buyer) String() string {
-	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", age:", ti.Age, "}")
+
+	fecha := time.Now().Format("2006-01-02T15:04:05")
+
+	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", age:", ti.Age, ", datec:", "\"", fecha, "\"", "}")
 }
 func (ti Products) String() string {
-
-	aux := fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", price:", ti.Price, "}")
+	fecha := time.Now().Format("2006-01-02T15:04:05")
+	aux := fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", price:", ti.Price, ", datec:", "\"", fecha, "\"", "}")
 
 	return aux
 }
 func (ti Transactions) String() string {
-	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", buyeid: {id:", "\"", ti.Buyeid, "\"}", ", ip:", "\"", ti.Ip, "\"", ", device:", "\"", ti.Device, "\"", ", productsids:[", ti.Productsids, "]}")
+	fecha := time.Now().Format("2006-01-02T15:04:05")
+	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", buyeid: {id:", "\"", ti.Buyeid, "\"}", ", ip:", "\"", ti.Ip, "\"", ", device:", "\"", ti.Device, "\"", ", productsids:[", ti.Productsids, "], datec:", "\"", fecha, "\"", "}")
 }
 
 func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -102,9 +112,11 @@ func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 	for _, te := range buyers {
 
 		ti := Buyer{
-			ID:   te.ID,
-			Name: te.Name,
-			Age:  te.Age,
+			ID:          te.ID,
+			Name:        te.Name,
+			Age:         te.Age,
+			Datec:       te.Datec,
+			Transaction: "null",
 		}
 
 		c = strings.Join([]string{ti.String(), c}, ",")
@@ -115,12 +127,13 @@ func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	c = strings.TrimRight(c, ",")
 
-	fmt.Println(c)
 	c = "mutation MyMutation { addBuyers(input: [ " + c + "]) { numUids }}"
+
+	fmt.Println(c)
 
 	jsonData := map[string]string{"query": c}
 
-	// fmt.Println(jsonData)
+	fmt.Println(jsonData)
 
 	jsonValue, err := json.Marshal(jsonData)
 	if err != nil {
@@ -163,9 +176,11 @@ func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	for _, row := range products {
 		tip := Products{
-			ID:    row[0],
-			Name:  row[1],
-			Price: row[2],
+			ID:          row[0],
+			Name:        row[1],
+			Price:       row[2],
+			Datec:       "",
+			Transaction: "null",
 		}
 		p = strings.Join([]string{tip.String(), p}, ",")
 	}
@@ -208,8 +223,8 @@ func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error en el body")
 		panic(err)
 	}
-	fmt.Println(datap)
-	fmt.Println(string(datap))
+	// fmt.Println(datap)
+	// fmt.Println(string(datap))
 	w.Write(datap)
 }
 func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
@@ -222,7 +237,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Println("\nTODOS LOS REGISTROS", transacc)
 	for _, row := range transacc {
-		for i := 1; i <= 4; i++ {
+		for i := 1; i <= 6120; i++ {
 			// fmt.Println("\n REGISTROS \n=>", i, row[i])
 			// fmt.Println("i=>", i) ////////////////7
 			st = row[i]
@@ -273,7 +288,6 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 							}
 						}
 						idpt = strings.TrimRight(idpt, ",")
-
 					}
 				}
 				jjj++
@@ -284,6 +298,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 				Ip:          ipt,
 				Device:      dt,
 				Productsids: idpt,
+				Datec:       "",
 			}
 			t = strings.Join([]string{tit.String(), t}, ",")
 			// t = strings.ReplaceAll(t, " ", "")
