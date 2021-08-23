@@ -20,7 +20,6 @@ type Buyer struct {
 	Name  string `json:"name"`
 	Age   int    `json:"age"`
 	Datec string `json:"datec "`
-	// Transaction string `json:"transaction "`
 }
 
 type Products struct {
@@ -28,12 +27,10 @@ type Products struct {
 	Name  string `json:"name"`
 	Price string `json:"price"`
 	Datec string `json:"datec "`
-	// Transaction string `json:"transaction "`
 }
 
 type Transactions struct {
-	ID string `json:"id"`
-	// Buyeid string `json:"buyeid"`
+	ID          string `json:"id"`
 	Buyeid      Buyer  `json:"buyeid"`
 	Ip          string `json:"ip"`
 	Device      string `json:"device"`
@@ -46,6 +43,7 @@ type Stringer interface {
 }
 
 func getBuyers() []Buyer {
+	// EXTRAE LOS DATOS DEL ARCHIVO COMPRADOR
 	buyers := make([]Buyer, 3)
 	raw, err := ioutil.ReadFile("filebuyers.json")
 	if err != nil {
@@ -57,7 +55,7 @@ func getBuyers() []Buyer {
 }
 
 func getProducts() [][]string {
-
+	// EXTRAE LOS DATOS DEL ARCHIVO PRODUCTOS
 	fileName := "fileprods.cvs"
 	fs1, _ := os.Open(fileName)
 
@@ -72,6 +70,7 @@ func getProducts() [][]string {
 }
 
 func getTransactions() [][]string {
+	// EXTRAE LOS DATOS DEL ARCHIVO DE TRANSACCIONES
 
 	fileName := "filetrans.cvs"
 	fs1, _ := os.Open(fileName)
@@ -88,18 +87,20 @@ func getTransactions() [][]string {
 }
 
 func (ti Buyer) String() string {
-
+	// CONVIERTE EN UN STRING AL TYPE COMPRADOR
 	fecha := time.Now().Format("2006-01-02T15:04:05")
 
 	return fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", age:", ti.Age, ", datec:", "\"", fecha, "\"", "}")
 }
 func (ti Products) String() string {
+	// CONVIERTE EN UN STRING AL TYPE PRODUCTO
 	fecha := time.Now().Format("2006-01-02T15:04:05")
-	aux := fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", price:", ti.Price, ", datec:", "\"", fecha, "\"", "}")
+	aux := fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", name:", "\"", ti.Name, "\"", ", price:", "\"", ti.Price, "\"", ", datec:", "\"", fecha, "\"", "}")
 
 	return aux
 }
 func (ti Transactions) String() []string {
+	// CONVIERTE EN UN STRING  AL TYPE TRANSACCION
 	fecha := time.Now().Format("2006-01-02T15:04:05")
 	ta := make([]string, 1)
 	// fmt.Sprintln("{", " id:", "\"", ti.ID, "\"", ", buyeid:", ti.Buyeid, ", ip:", "\"", ti.Ip, "\"", ", device:", "\"", ti.Device, "\"", ", productsids:[", ti.Productsids, "], datec:", "\"", fecha, "\"", "}")
@@ -116,7 +117,7 @@ func (ti Transactions) String() []string {
 
 func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 	/////////////////////////////////////////////////////////////////////
-	////buyers
+	////CARGA SOLO COMPRADORES
 	var c string
 	buyers := getBuyers()
 
@@ -152,7 +153,7 @@ func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://divine-snowflake.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -181,7 +182,7 @@ func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 	//////////////////////////////////////////////////////////////////////
-	////productos
+	////CARGA SOLO PRODUCTOS
 	var p string
 	products := getProducts()
 
@@ -191,7 +192,6 @@ func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 			Name:  row[1],
 			Price: row[2],
 			Datec: "",
-			// Transaction: "null",
 		}
 		p = strings.Join([]string{tip.String(), p}, ",")
 	}
@@ -213,7 +213,7 @@ func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// 	// fmt.Println(jsonValuep)
-	requestp, err := http.NewRequest("POST", "https://divine-snowflake.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuep))
+	requestp, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuep))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -240,18 +240,21 @@ func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 }
 func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 	/////////////////////////////////////////////////////
-	//Transacciones remote
+	//CARGA TRASACCIONES-COMPRADORES-PRODUCTOS
 	var item Buyer
 	var t, st, cad, idt, idbt, ipt, dt, idpt, st2, cad2 string
 	transacc := getTransactions()
+
 	var pos, pos2, kk, j, jjj, jj int
 	buyers := getBuyers()
 	products := getProducts()
 	ta := make([]string, 1)
 	// fmt.Println("\nTODOS LOS REGISTROS", transacc)
 	for _, row := range transacc {
-		for i := 1; i <= 14; i++ {
-			// fmt.Println("\n REGISTROS \n=>", i, row[i])
+		// fmt.Println(row)
+		x := 26
+		for i := 1; i <= x; i++ {
+			fmt.Println("\n REGISTROS \n=>", i, row[i])
 			// fmt.Println("i=>", i) ////////////////7
 			st = row[i]
 			jjj = 1
@@ -302,7 +305,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 										if jj == 1 {
 											idpt = strings.TrimLeft(idpt, ",")
 										}
-										break
+
 									}
 								}
 
@@ -310,7 +313,6 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 						}
 						idpt = strings.TrimRight(idpt, ",")
-						fmt.Println(idpt)
 					}
 				}
 				jjj++
@@ -318,24 +320,35 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 			for _, item = range buyers {
 				if item.ID == idbt {
-					return
+					tit := Transactions{
+						ID:          idt,
+						Buyeid:      item,
+						Ip:          ipt,
+						Device:      dt,
+						Productsids: idpt,
+						Datec:       "",
+					}
+					ta = append(ta, strings.Join(tit.String(), ","))
+
+					// return
 				}
 			}
-			tit := Transactions{
-				ID:          idt,
-				Buyeid:      item,
-				Ip:          ipt,
-				Device:      dt,
-				Productsids: idpt,
-				Datec:       "",
-			}
+			// tit := Transactions{
+			// 	ID:          idt,
+			// 	Buyeid:      item,
+			// 	Ip:          ipt,
+			// 	Device:      dt,
+			// 	Productsids: idpt,
+			// 	Datec:       "",
+			// }
 
 			// t = strings.Join(, t}, ",")
 
-			ta = append(ta, strings.Join(tit.String(), ","))
+			// ta = append(ta, strings.Join(tit.String(), ","))
 			// t = strings.ReplaceAll(t, " ", "")
 			// fmt.Println(ta)
 		}
+		// fmt.Println(ta)
 	}
 	t = strings.Join(ta, "")
 	t = strings.ReplaceAll(t, " ", "")
@@ -357,7 +370,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValuep)
-	requestt, err := http.NewRequest("POST", "https://divine-snowflake.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuet))
+	requestt, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuet))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -384,7 +397,8 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetListarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
-	c := "query MyQuery { queryBuyers {id name age}}"
+	//MUESTRA TODOS LOS COMPRADORES
+	c := "query MyQuery { queryBuyers {id name age datec transactionc(filter: {}) {id ip device datec productsids {id name price datec}}}}"
 
 	jsonData := map[string]string{"query": c}
 
@@ -396,16 +410,12 @@ func GetListarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://divine-snowflake.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
 	}
 	request.Header.Add("content-type", "application/json")
-	request.Header.Add("Access-Control-Allow-Origin", "*")
-	request.Header.Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS")
-	request.Header.Add("Access-Control-Allow-Headers", "content-type")
-	request.Header.Add("cache-control", "no-cache")
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
@@ -428,6 +438,7 @@ func GetListarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 
 }
 func GetListarProductosEndPoint(w http.ResponseWriter, r *http.Request) {
+	//MUESTRA TODOS LOS PRODUCTOS
 	c := "query MyQuery { queryProducts {id name price}}"
 
 	jsonData := map[string]string{"query": c}
@@ -440,7 +451,7 @@ func GetListarProductosEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://divine-snowflake.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -469,6 +480,7 @@ func GetListarProductosEndPoint(w http.ResponseWriter, r *http.Request) {
 
 }
 func GetListarTrasnsactionsEndPoint(w http.ResponseWriter, r *http.Request) {
+	//MUESTRA TODOS LOS COMPRADORES CON TODOS SUS DATOS
 	c := "query MyQuery { queryTransactions {id device ip datec productsids{id name price datec} buyeid{id name age datec}}}"
 
 	jsonData := map[string]string{"query": c}
@@ -481,7 +493,7 @@ func GetListarTrasnsactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://divine-snowflake.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -503,23 +515,51 @@ func GetListarTrasnsactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error en el body")
 		panic(err)
 	}
-	// r.Header.Set("Access-Control-Allow-Origin", "*")
+
 	w.Write(data)
-	// fmt.Println(data)
-	//fmt.Println(string(data))
 
 }
 
 func GetListarUnoEndPoint(w http.ResponseWriter, r *http.Request) {
+	//MUESTRA LOS DATOS DE UN COMPRADOR
 	params := mux.Vars(r)
-	buyers := getBuyers()
-	for _, item := range buyers {
-		if item.ID == params["id"] {
-			json.NewEncoder(w).Encode(item)
-			return
-		}
+
+	c := "query MyQuery  { queryBuyers (filter: {has: id, id: {eq: " + "\"" + params["id"] + "\"" + "}}) {id name age datec }}"
+
+	jsonData := map[string]string{"query": c}
+
+	// fmt.Println(jsonData)
+
+	jsonValue, err := json.Marshal(jsonData)
+	if err != nil {
+		fmt.Println("hay un error en el json")
+		panic(err)
 	}
-	json.NewEncoder(w).Encode(&Buyer{})
+	// fmt.Println(jsonValue)
+	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		fmt.Println("error al adicionar en el post")
+		panic(err)
+	}
+	request.Header.Add("content-type", "application/json")
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		fmt.Println("error al adicionar la query")
+		panic(err)
+	}
+	fmt.Println(request)
+	fmt.Println(response)
+	defer response.Body.Close()
+
+	data, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("error en el body")
+		panic(err)
+	}
+
+	w.Write(data)
+
 }
 
 func enableCORS(router *mux.Router) {
@@ -534,7 +574,6 @@ func middlewareCors(next http.Handler) http.Handler {
 		func(w http.ResponseWriter, req *http.Request) {
 			// Just put some headers to allow CORS...
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			// w.Header().Set("Access-Control-Allow-Credentials", "true")
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 			// and call next handler!
@@ -547,13 +586,13 @@ func main() {
 	r := mux.NewRouter()
 	enableCORS(r)
 
-	r.HandleFunc("/cargarc", GetCargarCompradorEndPoint).Methods("GET") //
-	r.HandleFunc("/cargarp", GetCargarProductoEndPoint).Methods("GET")  //
-	r.HandleFunc("/cargart", GetCargarTransactionsEndPoint).Methods("GET")
-	r.HandleFunc("/listarc", GetListarCompradorEndPoint).Methods("GET")
-	r.HandleFunc("/listarp", GetListarProductosEndPoint).Methods("GET")
-	r.HandleFunc("/listart", GetListarTrasnsactionsEndPoint).Methods("GET")
-	r.HandleFunc("/buyer/{id}", GetListarUnoEndPoint).Methods("GET")
+	r.HandleFunc("/cargarc", GetCargarCompradorEndPoint).Methods("GET")     // s
+	r.HandleFunc("/cargarp", GetCargarProductoEndPoint).Methods("GET")      // s
+	r.HandleFunc("/cargart", GetCargarTransactionsEndPoint).Methods("GET")  //s
+	r.HandleFunc("/listarc", GetListarCompradorEndPoint).Methods("GET")     //s
+	r.HandleFunc("/listarp", GetListarProductosEndPoint).Methods("GET")     //s
+	r.HandleFunc("/listart", GetListarTrasnsactionsEndPoint).Methods("GET") //s
+	r.HandleFunc("/buyer/{id}", GetListarUnoEndPoint).Methods("GET")        //s
 	log.Fatal(http.ListenAndServe(":9000", r))
 
 }
