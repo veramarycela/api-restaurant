@@ -153,7 +153,7 @@ func GetCargarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://floral-mountain.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -213,7 +213,7 @@ func GetCargarProductoEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// 	// fmt.Println(jsonValuep)
-	requestp, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuep))
+	requestp, err := http.NewRequest("POST", "https://floral-mountain.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuep))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -252,7 +252,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("\nTODOS LOS REGISTROS", transacc)
 	for _, row := range transacc {
 		// fmt.Println(row)
-		x := 26
+		x := 28 //606 //26
 		for i := 1; i <= x; i++ {
 			fmt.Println("\n REGISTROS \n=>", i, row[i])
 			// fmt.Println("i=>", i) ////////////////7
@@ -370,7 +370,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValuep)
-	requestt, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuet))
+	requestt, err := http.NewRequest("POST", "https://floral-mountain.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValuet))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -398,7 +398,7 @@ func GetCargarTransactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 
 func GetListarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 	//MUESTRA TODOS LOS COMPRADORES
-	c := "query MyQuery { queryBuyers {id name age datec transactionc(filter: {}) {id ip device datec productsids {id name price datec}}}}"
+	c := "query MyQuery { queryBuyers {id name age datec transaction(filter: {}) {id ip device datec productsids {id name price datec}}}}"
 
 	jsonData := map[string]string{"query": c}
 
@@ -410,7 +410,7 @@ func GetListarCompradorEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://floral-mountain.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -451,7 +451,7 @@ func GetListarProductosEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://floral-mountain.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -493,7 +493,7 @@ func GetListarTrasnsactionsEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://floral-mountain.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
@@ -524,7 +524,7 @@ func GetListarUnoEndPoint(w http.ResponseWriter, r *http.Request) {
 	//MUESTRA LOS DATOS DE UN COMPRADOR
 	params := mux.Vars(r)
 
-	c := "query MyQuery  { queryBuyers (filter: {has: id, id: {eq: " + "\"" + params["id"] + "\"" + "}}) {id name age datec }}"
+	c := "query MyQuery  { queryBuyers (filter: {has: id, id: {eq: " + "\"" + params["id"] + "\"" + "}}) {id name age datec transaction {id ip device datec productsids{id name price datec}}}}"
 
 	jsonData := map[string]string{"query": c}
 
@@ -536,7 +536,7 @@ func GetListarUnoEndPoint(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	// fmt.Println(jsonValue)
-	request, err := http.NewRequest("POST", "https://morning-paper.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
+	request, err := http.NewRequest("POST", "https://proud-sound.us-east-1.aws.cloud.dgraph.io/graphql", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error al adicionar en el post")
 		panic(err)
